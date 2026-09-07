@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OA-SATHI — Osteoarthritis Risk Screening</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1E2A27;
+    --ink-soft:#4B5A56;
+    --bg:#F5F7F4;
+    --panel:#FFFFFF;
+    --line:#DCE3DE;
+    --teal:#1E5B54;
+    --teal-deep:#123F3A;
+    --gold:#C4802E;
+    --low:#3F8F5F;
+    --moderate:#C99A2E;
+    --high:#D06B3A;
+    --veryhigh:#B23A3A;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter',system-ui,sans-serif;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    color:var(--teal-deep);
+    margin:0 0 .4em 0;
+    line-height:1.2;
+  }
+  .app{max-width:760px;margin:0 auto;padding:0 20px 80px;}
+
+  /* ---------- Header ---------- */
+  header.site{
+    background:var(--teal-deep);
+    color:#fff;
+    padding:22px 20px;
+  }
+  .header-inner{
+    max-width:760px;margin:0 auto;
+    display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+  }
+  .brand{display:flex;align-items:baseline;gap:10px;}
+  .brand h1{color:#fff;font-size:1.5rem;margin:0;}
+  .brand span{color:#B7D6CE;font-size:.82rem;font-family:'Inter',sans-serif;}
+  select#langSwitch{
+    background:var(--teal);
+    color:#fff;
+    border:1px solid #3A7A72;
+    border-radius:8px;
+    padding:8px 12px;
+    font-family:'Inter',sans-serif;
+    font-size:.9rem;
+  }
+
+  /* ---------- Progress ---------- */
+  .progress-track{
+    max-width:760px;margin:24px auto 8px;padding:0 20px;
+    display:flex;gap:6px;
+  }
+  .progress-seg{flex:1;height:5px;border-radius:4px;background:var(--line);}
+  .progress-seg.done{background:var(--teal);}
+
+  .step-label{
+    max-width:760px;margin:0 auto 18px;padding:0 20px;
+    font-size:.85rem;color:var(--ink-soft);
+    display:flex;justify-content:space-between;
+  }
+
+  /* ---------- Panels ---------- */
+  .panel{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:28px;
+    margin-bottom:20px;
+  }
+  .panel p.lede{color:var(--ink-soft);margin-top:-4px;}
+
+  /* ---------- Form elements ---------- */
+  label{display:block;font-weight:600;font-size:.92rem;margin:18px 0 6px;}
+  label.first{margin-top:0;}
+  input[type=text],input[type=number],select,textarea{
+    width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:8px;
+    font-family:'Inter',sans-serif;font-size:.95rem;background:#fff;color:var(--ink);
+  }
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--teal);outline-offset:1px;}
+
+  .likert{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;}
+  .likert button{
+    flex:1;min-width:64px;
+    padding:10px 6px;
+    border:1px solid var(--line);
+    background:#fff;
+    border-radius:8px;
+    font-family:'Inter',sans-serif;
+    font-size:.82rem;
+    cursor:pointer;
+    color:var(--ink-soft);
+    transition:background .12s,border-color .12s,color .12s;
+  }
+  .likert button.selected{
+    background:var(--teal);
+    border-color:var(--teal);
+    color:#fff;
+  }
+  .likert button:hover{border-color:var(--teal);}
+
+  .q-block{border-top:1px solid var(--line);padding-top:16px;margin-top:16px;}
+  .q-block:first-of-type{border-top:none;margin-top:0;padding-top:0;}
+  .q-text{font-weight:600;font-size:.95rem;margin-bottom:2px;}
+
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  @media(max-width:520px){.field-row{grid-template-columns:1fr;}}
+
+  .helper{font-size:.82rem;color:var(--ink-soft);margin-top:4px;}
+
+  fieldset{border:none;padding:0;margin:0;}
+  .radio-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px;}
+  .radio-pill{
+    border:1px solid var(--line);border-radius:20px;padding:8px 16px;font-size:.85rem;
+    cursor:pointer;color:var(--ink-soft);
+  }
+  .radio-pill.selected{background:var(--teal);color:#fff;border-color:var(--teal);}
+
+  /* ---------- Buttons ---------- */
+  .actions{display:flex;justify-content:space-between;margin-top:24px;}
+  button.btn{
+    font-family:'Inter',sans-serif;font-weight:600;font-size:.92rem;
+    padding:12px 22px;border-radius:8px;border:none;cursor:pointer;
+  }
+  .btn-primary{background:var(--teal);color:#fff;}
+  .btn-primary:hover{background:var(--teal-deep);}
+  .btn-secondary{background:transparent;color:var(--ink-soft);border:1px solid var(--line);}
+  .btn-secondary:hover{border-color:var(--ink-soft);}
+  .btn-primary:disabled{opacity:.45;cursor:not-allowed;}
+
+  /* ---------- Results ---------- */
+  .score-card{
+    text-align:center;padding:36px 20px;border-radius:var(--radius);
+    color:#fff;margin-bottom:20px;
+  }
+  .score-card.low{background:var(--low);}
+  .score-card.moderate{background:var(--moderate);}
+  .score-card.high{background:var(--high);}
+  .score-card.veryhigh{background:var(--veryhigh);}
+  .score-num{font-family:'Fraunces',serif;font-size:3.2rem;font-weight:700;}
+  .score-band{font-size:1.2rem;font-weight:600;margin-top:4px;}
+
+  .bar-row{display:flex;align-items:center;gap:12px;margin:10px 0;}
+  .bar-label{width:150px;font-size:.85rem;color:var(--ink-soft);flex-shrink:0;}
+  .bar-track{flex:1;background:var(--line);height:10px;border-radius:6px;overflow:hidden;}
+  .bar-fill{height:100%;background:var(--teal);}
+  .bar-val{width:38px;text-align:right;font-size:.82rem;color:var(--ink-soft);}
+
+  ul.guidance{margin:10px 0 0;padding-left:20px;}
+  ul.guidance li{margin-bottom:6px;}
+
+  .tag{
+    display:inline-block;font-size:.75rem;font-weight:600;
+    background:var(--bg);border:1px solid var(--line);border-radius:6px;
+    padding:3px 8px;margin-right:6px;color:var(--ink-soft);
+  }
+
+  .import-box{
+    border:1.5px dashed var(--line);border-radius:8px;padding:20px;text-align:center;
+    color:var(--ink-soft);font-size:.88rem;margin-top:10px;
+  }
+  .import-box input{display:block;margin:10px auto 0;}
+
+  footer.site{text-align:center;color:var(--ink-soft);font-size:.8rem;padding:30px 20px;}
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="header-inner">
+    <div class="brand">
+      <h1 id="t-brand">OA-SATHI</h1>
+      <span id="t-tagline">AI-assisted OA risk screening · NER</span>
+    </div>
+    <select id="langSwitch" aria-label="Language">
+      <option value="en">English</option>
+      <option value="hi">हिन्दी</option>
+      <option value="as">অসমীয়া</option>
+    </select>
+  </div>
+</header>
+
+<div class="progress-track" id="progressTrack"></div>
+<div class="step-label">
+  <span id="stepName"></span>
+  <span id="stepCount"></span>
+</div>
+
+<div class="app">
+
+  <!-- STEP 0: WELCOME -->
+  <section class="panel step" data-step="0">
+    <h2 id="t-welcome-h">Early screening for joint health</h2>
+    <p class="lede" id="t-welcome-p">This tool helps healthcare workers record a patient's symptoms and combine them with gait, wearable-sensor, or imaging data collected offline to generate a preliminary osteoarthritis (OA) risk score. It does not replace a doctor's diagnosis.</p>
+
+    <label class="first" id="t-worker-label">Healthcare worker / facility name</label>
+    <input type="text" id="workerName" placeholder="e.g. Community Health Camp, Ukhrul">
+
+    <div class="field-row">
+      <div>
+        <label id="t-patientid-label">Patient ID</label>
+        <input type="text" id="patientId" placeholder="e.g. NER-2026-0143">
+      </div>
+      <div>
+        <label id="t-date-label">Screening date</label>
+        <input type="text" id="screenDate" placeholder="dd/mm/yyyy">
+      </div>
+    </div>
+
+    <div class="actions">
+      <span></span>
+      <button class="btn btn-primary" id="t-start-btn" onclick="goStep(1)">Start screening</button>
+    </div>
+  </section>
+
+  <!-- STEP 1: PATIENT INFO -->
+  <section class="panel step" data-step="1" style="display:none;">
+    <h2 id="t-info-h">Patient background</h2>
+    <p class="lede" id="t-info-p">Basic details and risk factors.</p>
+
+    <div class="field-row">
+      <div>
+        <label class="first" id="t-age-label">Age</label>
+        <input type="number" id="age" min="10" max="120">
+      </div>
+      <div>
+        <label class="first" id="t-sex-label">Sex</label>
+        <select id="sex">
+          <option value="f" id="t-sex-f">Female</option>
+          <option value="m" id="t-sex-m">Male</option>
+          <option value="o" id="t-sex-o">Other</option>
+        </select>
+      </div>
+    </div>
+
+    <label id="t-bmi-label">Body build</label>
+    <div class="radio-row" data-group="bmi">
+      <div class="radio-pill" data-value="0" id="t-bmi-normal">Normal</div>
+      <div class="radio-pill" data-value="1" id="t-bmi-over">Overweight</div>
+      <div class="radio-pill" data-value="2" id="t-bmi-obese">Obese</div>
+    </div>
+
+    <label id="t-occ-label">Occupation type</label>
+    <div class="radio-row" data-group="occupation">
+      <div class="radio-pill" data-value="0" id="t-occ-light">Light work</div>
+      <div class="radio-pill" data-value="1" id="t-occ-mod">Moderate physical labor</div>
+      <div class="radio-pill" data-value="2" id="t-occ-heavy">Heavy / farming / manual labor</div>
+    </div>
+
+    <label id="t-injury-label">Previous knee/joint injury</label>
+    <div class="radio-row" data-group="injury">
+      <div class="radio-pill" data-value="0" id="t-injury-no">No</div>
+      <div class="radio-pill" data-value="1" id="t-injury-yes">Yes</div>
+    </div>
+
+    <label id="t-family-label">Family history of OA</label>
+    <div class="radio-row" data-group="family">
+      <div class="radio-pill" data-value="0" id="t-family-no">No</div>
+      <div class="radio-pill" data-value="1" id="t-family-yes">Yes</div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-secondary" id="t-back-1" onclick="goStep(0)">Back</button>
+      <button class="btn btn-primary" id="t-next-1" onclick="goStep(2)">Continue</button>
+    </div>
+  </section>
+
+  <!-- STEP 2: QUESTIONNAIRE -->
+  <section class="panel step" data-step="2" style="display:none;">
+    <h2 id="t-quest-h">Pain, stiffness &amp; mobility (WOMAC-lite)</h2>
+    <p class="lede" id="t-quest-p">Ask the patient to rate each over the past week. None → Extreme.</p>
+    <div id="questionnaireList"></div>
+    <div class="actions">
+      <button class="btn btn-secondary" id="t-back-2" onclick="goStep(1)">Back</button>
+      <button class="btn btn-primary" id="t-next-2" onclick="goStep(3)" disabled>Continue</button>
+    </div>
+  </section>
+
+  <!-- STEP 3: DEVICE / SENSOR DATA -->
+  <section class="panel step" data-step="3" style="display:none;">
+    <h2 id="t-device-h">Gait, wearable &amp; imaging data</h2>
+    <p class="lede" id="t-device-p">Enter the results generated offline by the screening kit (Raspberry Pi + camera + IMU/flex/FSR sensors), or import the synced report file.</p>
+
+    <div class="import-box">
+      <span id="t-import-label">Import a device report (.json)</span>
+      <input type="file" id="fileImport" accept="application/json">
+    </div>
+
+    <label id="t-gait-label">Gait &amp; posture score (0 = normal, 100 = severe asymmetry)</label>
+    <input type="number" id="gaitScore" min="0" max="100" placeholder="0–100">
+
+    <label id="t-rom-label">Knee range-of-motion / flex sensor score (0 = full mobility, 100 = highly restricted)</label>
+    <input type="number" id="romScore" min="0" max="100" placeholder="0–100">
+
+    <label id="t-imaging-label">X-ray available?</label>
+    <div class="radio-row" data-group="imagingAvailable">
+      <div class="radio-pill" data-value="1" id="t-imaging-yes">Yes</div>
+      <div class="radio-pill" data-value="0" id="t-imaging-no">No / not done</div>
+    </div>
+
+    <div id="klWrap" style="display:none;">
+      <label id="t-kl-label">Kellgren-Lawrence grade (0–4)</label>
+      <select id="klGrade">
+        <option value="0">0 — none</option>
+        <option value="1">1 — doubtful</option>
+        <option value="2">2 — minimal</option>
+        <option value="3">3 — moderate</option>
+        <option value="4">4 — severe</option>
+      </select>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-secondary" id="t-back-3" onclick="goStep(2)">Back</button>
+      <button class="btn btn-primary" id="t-next-3" onclick="calculateAndShow()">Generate risk score</button>
+    </div>
+  </section>
+
+  <!-- STEP 4: RESULTS -->
+  <section class="panel step" data-step="4" style="display:none;">
+    <div id="scoreCard" class="score-card low">
+      <div id="t-result-label" style="opacity:.85;font-size:.9rem;">OA RISK SCORE</div>
+      <div class="score-num" id="finalScore">0</div>
+      <div class="score-band" id="finalBand">Low</div>
+    </div>
+
+    <div class="panel" style="margin-bottom:0;">
+      <h3 id="t-breakdown-h">Contributing factors</h3>
+      <div id="breakdown"></div>
+    </div>
+
+    <div class="panel">
+      <h3 id="t-guidance-h">Recommended next step</h3>
+      <p id="guidanceText"></p>
+      <ul class="guidance" id="guidanceList"></ul>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-secondary" onclick="window.print()" id="t-print">Print report</button>
+      <button class="btn btn-primary" onclick="location.reload()" id="t-restart">New screening</button>
+    </div>
+  </section>
+
+</div>
+
+<footer class="site" id="t-footer">OA-SATHI — Prototype frontend for SIH 2026 (SIH26004) · Team Kinetiq. Screening tool only, not a medical diagnosis.</footer>
+
+<script>
+/* ===================== TRANSLATIONS ===================== */
+const T = {
+  en: {
+    brand:"OA-SATHI", tagline:"AI-assisted OA risk screening · NER",
+    "welcome-h":"Early screening for joint health",
+    "welcome-p":"This tool helps healthcare workers record a patient's symptoms and combine them with gait, wearable-sensor, or imaging data collected offline to generate a preliminary osteoarthritis (OA) risk score. It does not replace a doctor's diagnosis.",
+    "worker-label":"Healthcare worker / facility name",
+    "patientid-label":"Patient ID", "date-label":"Screening date",
+    "start-btn":"Start screening",
+    "info-h":"Patient background", "info-p":"Basic details and risk factors.",
+    "age-label":"Age", "sex-label":"Sex", "sex-f":"Female","sex-m":"Male","sex-o":"Other",
+    "bmi-label":"Body build","bmi-normal":"Normal","bmi-over":"Overweight","bmi-obese":"Obese",
+    "occ-label":"Occupation type","occ-light":"Light work","occ-mod":"Moderate physical labor","occ-heavy":"Heavy / farming / manual labor",
+    "injury-label":"Previous knee/joint injury","injury-no":"No","injury-yes":"Yes",
+    "family-label":"Family history of OA","family-no":"No","family-yes":"Yes",
+    "back-1":"Back","next-1":"Continue",
+    "quest-h":"Pain, stiffness & mobility (WOMAC-lite)",
+    "quest-p":"Ask the patient to rate each over the past week. None → Extreme.",
+    "back-2":"Back","next-2":"Continue",
+    "device-h":"Gait, wearable & imaging data",
+    "device-p":"Enter the results generated offline by the screening kit (Raspberry Pi + camera + IMU/flex/FSR sensors), or import the synced report file.",
+    "import-label":"Import a device report (.json)",
+    "gait-label":"Gait & posture score (0 = normal, 100 = severe asymmetry)",
+    "rom-label":"Knee range-of-motion / flex sensor score (0 = full mobility, 100 = highly restricted)",
+    "imaging-label":"X-ray available?","imaging-yes":"Yes","imaging-no":"No / not done",
+    "kl-label":"Kellgren-Lawrence grade (0–4)",
+    "back-3":"Back","next-3":"Generate risk score",
+    "result-label":"OA RISK SCORE",
+    "breakdown-h":"Contributing factors",
+    "guidance-h":"Recommended next step",
+    "print":"Print report","restart":"New screening",
+    footer:"OA-SATHI — Prototype frontend for SIH 2026 (SIH26004) · Team Kinetiq. Screening tool only, not a medical diagnosis.",
+    questions:[
+      "Pain when walking on a flat surface",
+      "Pain when going up or down stairs",
+      "Pain at night while in bed",
+      "Morning stiffness in the knee/joint",
+      "Stiffness after sitting or resting",
+      "Difficulty rising from sitting",
+      "Difficulty standing for long periods",
+      "Difficulty getting in/out of a vehicle",
+      "Difficulty walking on uneven ground",
+      "Difficulty squatting or kneeling"
+    ],
+    likert:["None","Mild","Moderate","Severe","Extreme"],
+    bands:{low:"Low risk",moderate:"Moderate risk",high:"High risk",veryhigh:"Very high risk"},
+    guidance:{
+      low:{text:"No urgent referral needed. Share preventive guidance.",
+        list:["Encourage regular low-impact exercise (walking, swimming, cycling)","Maintain healthy body weight","Re-screen in 12 months or if symptoms change"]},
+      moderate:{text:"Provide lifestyle advice and targeted exercises; schedule a follow-up screening.",
+        list:["Refer to joint-care exercise guidance","Advise activity modification for heavy manual work","Re-screen in 3–6 months"]},
+      high:{text:"Refer to the nearest PHC or orthopaedic specialist for clinical evaluation.",
+        list:["Book a specialist consultation within 4–6 weeks","Provide pain-management and mobility-aid guidance","Bring this report to the consultation"]},
+      veryhigh:{text:"Urgent referral advised — arrange specialist evaluation as soon as possible.",
+        list:["Refer urgently to orthopaedic specialist / district hospital","Advise reduced weight-bearing activity in the meantime","Flag case for priority follow-up"]}
+    }
+  },
+  hi: {
+    brand:"ओए-साथी", tagline:"एआई-सहायित घुटने की जांच · पूर्वोत्तर",
+    "welcome-h":"जोड़ों के स्वास्थ्य की शुरुआती जांच",
+    "welcome-p":"यह टूल स्वास्थ्य कर्मियों को मरीज़ के लक्षण दर्ज करने और ऑफ़लाइन एकत्र किए गए चाल, सेंसर या इमेजिंग डेटा के साथ मिलाकर ऑस्टियोआर्थराइटिस (OA) का प्रारंभिक जोखिम स्कोर बनाने में मदद करता है। यह डॉक्टर के निदान का विकल्प नहीं है।",
+    "worker-label":"स्वास्थ्य कर्मी / केंद्र का नाम",
+    "patientid-label":"मरीज़ आईडी", "date-label":"जांच की तारीख",
+    "start-btn":"जांच शुरू करें",
+    "info-h":"मरीज़ की पृष्ठभूमि", "info-p":"बुनियादी जानकारी और जोखिम कारक।",
+    "age-label":"उम्र", "sex-label":"लिंग", "sex-f":"महिला","sex-m":"पुरुष","sex-o":"अन्य",
+    "bmi-label":"शारीरिक बनावट","bmi-normal":"सामान्य","bmi-over":"अधिक वज़न","bmi-obese":"मोटापा",
+    "occ-label":"कार्य का प्रकार","occ-light":"हल्का काम","occ-mod":"मध्यम शारीरिक श्रम","occ-heavy":"भारी / खेती / मैनुअल श्रम",
+    "injury-label":"पहले घुटने/जोड़ में चोट","injury-no":"नहीं","injury-yes":"हाँ",
+    "family-label":"OA का पारिवारिक इतिहास","family-no":"नहीं","family-yes":"हाँ",
+    "back-1":"पीछे","next-1":"आगे",
+    "quest-h":"दर्द, अकड़न और गतिशीलता (WOMAC-lite)",
+    "quest-p":"मरीज़ से पिछले सप्ताह के अनुसार रेटिंग पूछें। कोई नहीं → अत्यधिक।",
+    "back-2":"पीछे","next-2":"आगे",
+    "device-h":"चाल, सेंसर व इमेजिंग डेटा",
+    "device-p":"स्क्रीनिंग किट (रास्पबेरी पाई + कैमरा + IMU/फ्लेक्स/FSR सेंसर) से ऑफ़लाइन प्राप्त परिणाम दर्ज करें, या सिंक की गई रिपोर्ट फ़ाइल आयात करें।",
+    "import-label":"डिवाइस रिपोर्ट आयात करें (.json)",
+    "gait-label":"चाल व मुद्रा स्कोर (0 = सामान्य, 100 = गंभीर असमानता)",
+    "rom-label":"घुटने की गति सीमा / फ्लेक्स सेंसर स्कोर (0 = पूर्ण गतिशीलता, 100 = अत्यधिक सीमित)",
+    "imaging-label":"एक्स-रे उपलब्ध है?","imaging-yes":"हाँ","imaging-no":"नहीं / नहीं किया गया",
+    "kl-label":"केलग्रेन-लॉरेंस ग्रेड (0–4)",
+    "back-3":"पीछे","next-3":"जोखिम स्कोर बनाएं",
+    "result-label":"OA जोखिम स्कोर",
+    "breakdown-h":"योगदान देने वाले कारक",
+    "guidance-h":"अनुशंसित अगला कदम",
+    "print":"रिपोर्ट प्रिंट करें","restart":"नई जांच",
+    footer:"OA-SATHI — SIH 2026 (SIH26004) के लिए प्रोटोटाइप · टीम Kinetiq। केवल जांच उपकरण, चिकित्सीय निदान नहीं।",
+    questions:[
+      "समतल सतह पर चलने पर दर्द",
+      "सीढ़ियाँ चढ़ने/उतरने पर दर्द",
+      "रात में बिस्तर पर दर्द",
+      "सुबह घुटने/जोड़ में अकड़न",
+      "बैठने या आराम के बाद अकड़न",
+      "बैठने से उठने में कठिनाई",
+      "लंबे समय तक खड़े रहने में कठिनाई",
+      "वाहन में चढ़ने/उतरने में कठिनाई",
+      "असमान ज़मीन पर चलने में कठिनाई",
+      "बैठने (स्क्वाट) या घुटने टेकने में कठिनाई"
+    ],
+    likert:["कोई नहीं","हल्का","मध्यम","गंभीर","अत्यधिक"],
+    bands:{low:"कम जोखिम",moderate:"मध्यम जोखिम",high:"उच्च जोखिम",veryhigh:"बहुत उच्च जोखिम"},
+    guidance:{
+      low:{text:"तुरंत रेफ़रल की आवश्यकता नहीं। निवारक सलाह दें।",
+        list:["नियमित हल्के व्यायाम को प्रोत्साहित करें (चलना, तैराकी, साइकिल चलाना)","स्वस्थ वज़न बनाए रखें","12 महीने में या लक्षण बदलने पर पुनः जांच करें"]},
+      moderate:{text:"जीवनशैली सलाह और लक्षित व्यायाम दें; फॉलो-अप जांच निर्धारित करें।",
+        list:["जोड़ों की देखभाल के व्यायाम बताएं","भारी मैनुअल काम में बदलाव की सलाह दें","3–6 महीने में पुनः जांच करें"]},
+      high:{text:"नैदानिक मूल्यांकन के लिए निकटतम PHC या हड्डी रोग विशेषज्ञ के पास भेजें।",
+        list:["4–6 सप्ताह में विशेषज्ञ परामर्श बुक करें","दर्द प्रबंधन व गतिशीलता सहायता की सलाह दें","यह रिपोर्ट परामर्श में साथ लाएं"]},
+      veryhigh:{text:"तत्काल रेफ़रल की सलाह दी जाती है — जल्द से जल्द विशेषज्ञ मूल्यांकन कराएं।",
+        list:["तुरंत हड्डी रोग विशेषज्ञ / जिला अस्पताल भेजें","तब तक वज़न सहन करने वाली गतिविधि कम करने की सलाह दें","प्राथमिकता फॉलो-अप के लिए चिह्नित करें"]}
+    }
+  },
+  as: {
+    brand:"ওএ-সাথী", tagline:"এআই-সহায়ক OA বিপদ পৰীক্ষা · উত্তৰ-পূৰ্বাঞ্চল",
+    "welcome-h":"যুটিৰ স্বাস্থ্যৰ প্ৰাৰম্ভিক পৰীক্ষা",
+    "welcome-p":"এই সঁজুলিটোৱে স্বাস্থ্যকৰ্মীক ৰোগীৰ লক্ষণ লিপিবদ্ধ কৰাত আৰু অফলাইনত সংগ্ৰহ কৰা গেইট, ছেন্সৰ বা ইমেজিং ডেটাৰ সৈতে মিলাই অষ্টিঅ'আৰ্থ্ৰাইটিছ (OA)ৰ প্ৰাথমিক বিপদ স্ক'ৰ তৈয়াৰ কৰাত সহায় কৰে। ই চিকিৎসকৰ নিদানৰ পৰিবৰ্তে নহয়।",
+    "worker-label":"স্বাস্থ্যকৰ্মী / কেন্দ্ৰৰ নাম",
+    "patientid-label":"ৰোগী আইডি", "date-label":"পৰীক্ষাৰ তাৰিখ",
+    "start-btn":"পৰীক্ষা আৰম্ভ কৰক",
+    "info-h":"ৰোগীৰ পটভূমি", "info-p":"মৌলিক তথ্য আৰু বিপদ কাৰক।",
+    "age-label":"বয়স", "sex-label":"লিংগ", "sex-f":"মহিলা","sex-m":"পুৰুষ","sex-o":"আন",
+    "bmi-label":"শৰীৰৰ গঠন","bmi-normal":"স্বাভাৱিক","bmi-over":"অধিক ওজন","bmi-obese":"স্থূলতা",
+    "occ-label":"কামৰ ধৰণ","occ-light":"লঘু কাম","occ-mod":"মধ্যম শাৰীৰিক শ্ৰম","occ-heavy":"গধুৰ / কৃষি / হাতেৰে কৰা কাম",
+    "injury-label":"পূৰ্বতে আঘুৰি/যুটিত আঘাত","injury-no":"নাই","injury-yes":"হয়",
+    "family-label":"OAৰ পাৰিবাৰিক ইতিহাস","family-no":"নাই","family-yes":"হয়",
+    "back-1":"পিছলৈ","next-1":"আগবাঢ়ক",
+    "quest-h":"বিষ, টান লগা আৰু চলাফুৰা (WOMAC-lite)",
+    "quest-p":"যোৱা সপ্তাহৰ অনুসৰি ৰোগীক ৰেটিং সোধক। একো নাই → অত্যধিক।",
+    "back-2":"পিছলৈ","next-2":"আগবাঢ়ক",
+    "device-h":"গেইট, ছেন্সৰ আৰু ইমেজিং ডেটা",
+    "device-p":"স্ক্ৰীনিং কিটৰ পৰা (Raspberry Pi + কেমেৰা + IMU/ফ্লেক্স/FSR ছেন্সৰ) অফলাইনত পোৱা ফলাফল দিয়ক, বা ছিংক কৰা ৰিপ'ৰ্ট ফাইল আমদানি কৰক।",
+    "import-label":"ডিভাইচ ৰিপ'ৰ্ট আমদানি কৰক (.json)",
+    "gait-label":"গেইট আৰু ভংগী স্ক'ৰ (0 = স্বাভাৱিক, 100 = গুৰুতৰ অসমতা)",
+    "rom-label":"আঘুৰিৰ চলন সীমা / ফ্লেক্স ছেন্সৰ স্ক'ৰ (0 = সম্পূৰ্ণ চলাফুৰা, 100 = অতিমাত্ৰা সীমিত)",
+    "imaging-label":"এক্স-ৰে উপলব্ধ নেকি?","imaging-yes":"হয়","imaging-no":"নাই / কৰা হোৱা নাই",
+    "kl-label":"কেলগ্ৰেন-লৰেন্স গ্ৰেড (0–4)",
+    "back-3":"পিছলৈ","next-3":"বিপদ স্ক'ৰ তৈয়াৰ কৰক",
+    "result-label":"OA বিপদ স্ক'ৰ",
+    "breakdown-h":"অৱদানকাৰী কাৰকসমূহ",
+    "guidance-h":"পৰামৰ্শিত পৰৱৰ্তী পদক্ষেপ",
+    "print":"ৰিপ'ৰ্ট প্ৰিণ্ট কৰক","restart":"নতুন পৰীক্ষা",
+    footer:"OA-SATHI — SIH 2026 (SIH26004) ৰ বাবে প্ৰ'ট'টাইপ · Team Kinetiq। কেৱল পৰীক্ষা সঁজুলি, চিকিৎসা নিদান নহয়।",
+    questions:[
+      "সমতল পৃষ্ঠত খোজ কাঢ়োঁতে বিষ",
+      "খিৰিকী উঠা-নমাত বিষ",
+      "ৰাতি বিচনাত থাকোঁতে বিষ",
+      "ৰাতিপুৱা আঘুৰি/যুটিত টান লগা",
+      "বহি থকা বা জিৰণিৰ পিছত টান লগা",
+      "বহাৰ পৰা উঠাত অসুবিধা",
+      "বহু সময় থিয় হৈ থকাত অসুবিধা",
+      "গাড়ীত উঠা-নমাত অসুবিধা",
+      "অসমান মাটিত খোজ কাঢ়াত অসুবিধা",
+      "বহা (squat) বা আঁঠু কাঢ়াত অসুবিধা"
+    ],
+    likert:["একো নাই","লঘু","মধ্যম","গুৰুতৰ","অত্যধিক"],
+    bands:{low:"কম বিপদ",moderate:"মধ্যম বিপদ",high:"উচ্চ বিপদ",veryhigh:"অতি উচ্চ বিপদ"},
+    guidance:{
+      low:{text:"তৎক্ষণাৎ প্ৰেৰণৰ প্ৰয়োজন নাই। নিৰাময়মূলক পৰামৰ্শ দিয়ক।",
+        list:["নিয়মীয়া লঘু ব্যায়ামত উৎসাহিত কৰক (খোজকঢ়া, সাঁতোৰা, চাইকেল চলোৱা)","সুস্থ ওজন বজাই ৰাখক","১২ মাহত বা লক্ষণ সলনি হ'লে পুনৰ পৰীক্ষা কৰক"]},
+      moderate:{text:"জীৱনশৈলী পৰামৰ্শ আৰু লক্ষ্যভিত্তিক ব্যায়াম দিয়ক; ফলো-আপ পৰীক্ষা নিৰ্ধাৰণ কৰক।",
+        list:["যুটিৰ যত্নৰ ব্যায়াম পৰামৰ্শ দিয়ক","গধুৰ কামত সলনি কৰিবলৈ পৰামৰ্শ দিয়ক","৩–৬ মাহত পুনৰ পৰীক্ষা কৰক"]},
+      high:{text:"নিকটতম PHC বা অস্থি বিশেষজ্ঞলৈ প্ৰেৰণ কৰক।",
+        list:["৪–৬ সপ্তাহৰ ভিতৰত বিশেষজ্ঞ পৰামৰ্শ বুক কৰক","বিষ ব্যৱস্থাপনা আৰু চলাফুৰা সহায়ৰ পৰামৰ্শ দিয়ক","এই ৰিপ'ৰ্ট পৰামৰ্শলৈ লৈ যাওক"]},
+      veryhigh:{text:"তৎক্ষণাৎ প্ৰেৰণৰ পৰামৰ্শ — যিমান সোনকালে সম্ভৱ বিশেষজ্ঞ মূল্যায়ন কৰক।",
+        list:["তৎক্ষণাৎ অস্থি বিশেষজ্ঞ / জিলা চিকিৎসালয়লৈ প্ৰেৰণ কৰক","ইতিমধ্যে ওজন বহনকাৰী কাৰ্যকলাপ হ্ৰাস কৰিবলৈ পৰামৰ্শ দিয়ক","প্ৰাথমিকতা ফলো-আপৰ বাবে চিহ্নিত কৰক"]}
+    }
+  }
+};
+
+let currentLang = "en";
+let currentStep = 0;
+const answers = {}; // questionnaire answers by index
+const radioState = {}; // group -> value
+
+/* ===================== RENDER TEXT ===================== */
+function applyLang(lang){
+  currentLang = lang;
+  const dict = T[lang];
+  document.querySelectorAll("[id^='t-']").forEach(el=>{
+    const key = el.id.replace("t-","");
+    if(dict[key] !== undefined) el.textContent = dict[key];
+  });
+  document.getElementById("t-brand").textContent = dict.brand;
+  buildQuestionnaire();
+  updateStepLabel();
+}
+
+/* ===================== QUESTIONNAIRE ===================== */
+function buildQuestionnaire(){
+  const dict = T[currentLang];
+  const container = document.getElementById("questionnaireList");
+  container.innerHTML = "";
+  dict.questions.forEach((q,i)=>{
+    const block = document.createElement("div");
+    block.className = "q-block";
+    const label = document.createElement("div");
+    label.className = "q-text";
+    label.textContent = (i+1)+". "+q;
+    block.appendChild(label);
+
+    const likert = document.createElement("div");
+    likert.className = "likert";
+    dict.likert.forEach((opt,val)=>{
+      const b = document.createElement("button");
+      b.textContent = opt;
+      b.type = "button";
+      if(answers[i] === val) b.classList.add("selected");
+      b.onclick = ()=>{
+        answers[i] = val;
+        buildQuestionnaire();
+        checkQuestionnaireComplete();
+      };
+      likert.appendChild(b);
+    });
+    block.appendChild(likert);
+    container.appendChild(block);
+  });
+}
+
+function checkQuestionnaireComplete(){
+  const dict = T[currentLang];
+  const done = dict.questions.every((_,i)=> answers[i] !== undefined);
+  document.getElementById("t-next-2").disabled = !done;
+}
+
+/* ===================== RADIO PILLS ===================== */
+document.querySelectorAll(".radio-row").forEach(row=>{
+  const group = row.dataset.group;
+  row.querySelectorAll(".radio-pill").forEach(pill=>{
+    pill.onclick = ()=>{
+      row.querySelectorAll(".radio-pill").forEach(p=>p.classList.remove("selected"));
+      pill.classList.add("selected");
+      radioState[group] = pill.dataset.value;
+      if(group === "imagingAvailable"){
+        document.getElementById("klWrap").style.display = pill.dataset.value === "1" ? "block" : "none";
+      }
+    };
+  });
+});
+
+/* ===================== STEP NAVIGATION ===================== */
+const stepNames = {
+  en:["Welcome","Patient info","Questionnaire","Device data","Results"],
+  hi:["स्वागत","मरीज़ जानकारी","प्रश्नावली","डिवाइस डेटा","परिणाम"],
+  as:["স্বাগতম","ৰোগীৰ তথ্য","প্ৰশ্নাৱলী","ডিভাইচ ডেটা","ফলাফল"]
+};
+
+function buildProgress(){
+  const track = document.getElementById("progressTrack");
+  track.innerHTML = "";
+  for(let i=0;i<5;i++){
+    const seg = document.createElement("div");
+    seg.className = "progress-seg" + (i<=currentStep ? " done":"");
+    track.appendChild(seg);
+  }
+}
+
+function updateStepLabel(){
+  document.getElementById("stepName").textContent = stepNames[currentLang][currentStep];
+  document.getElementById("stepCount").textContent = (currentStep+1)+" / 5";
+  buildProgress();
+}
+
+function goStep(n){
+  document.querySelectorAll(".step").forEach(s=> s.style.display = "none");
+  document.querySelector(`.step[data-step='${n}']`).style.display = "block";
+  currentStep = n;
+  updateStepLabel();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+/* ===================== FILE IMPORT ===================== */
+document.getElementById("fileImport").addEventListener("change", function(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(evt){
+    try{
+      const data = JSON.parse(evt.target.result);
+      if(data.gaitScore !== undefined) document.getElementById("gaitScore").value = data.gaitScore;
+      if(data.romScore !== undefined) document.getElementById("romScore").value = data.romScore;
+      if(data.klGrade !== undefined){
+        document.getElementById("klGrade").value = data.klGrade;
+        document.querySelector("[data-group='imagingAvailable'] [data-value='1']").click();
+      }
+    }catch(err){
+      alert("Could not read this file. Expected a JSON report with gaitScore / romScore / klGrade fields.");
+    }
+  };
+  reader.readAsText(file);
+});
+
+/* ===================== SCORING ENGINE ===================== */
+function calculateAndShow(){
+  const dict = T[currentLang];
+
+  // --- Questionnaire sub-score (0-100) ---
+  const totalQ = Object.keys(answers).length ? Object.values(answers).reduce((a,b)=>a+b,0) : 0;
+  const maxQ = dict.questions.length * 4;
+  const qScore = maxQ ? Math.round((totalQ/maxQ)*100) : 0;
+
+  // --- Risk factor sub-score (0-100) ---
+  const age = parseInt(document.getElementById("age").value) || 0;
+  let ageScore = age >= 65 ? 100 : age >= 50 ? 65 : age >= 35 ? 30 : 10;
+  const bmi = parseInt(radioState["bmi"] || 0);
+  const occ = parseInt(radioState["occupation"] || 0);
+  const injury = parseInt(radioState["injury"] || 0);
+  const family = parseInt(radioState["family"] || 0);
+  const riskFactorScore = Math.round(
+    (ageScore*0.4) + (bmi/2*100*0.2) + (occ/2*100*0.2) + (injury*100*0.1) + (family*100*0.1)
+  );
+
+  // --- Gait/wearable sub-score ---
+  const gaitScore = Math.min(100, Math.max(0, parseInt(document.getElementById("gaitScore").value) || 0));
+  const romScore = Math.min(100, Math.max(0, parseInt(document.getElementById("romScore").value) || 0));
+  const sensorScore = Math.round((gaitScore + romScore)/2);
+
+  // --- Imaging sub-score ---
+  const imagingAvailable = radioState["imagingAvailable"] === "1";
+  const klGrade = imagingAvailable ? parseInt(document.getElementById("klGrade").value) : null;
+  const imagingScore = imagingAvailable ? Math.round((klGrade/4)*100) : null;
+
+  // --- Weighted composite ---
+  let composite;
+  const breakdownRows = [];
+  if(imagingAvailable){
+    composite = qScore*0.30 + sensorScore*0.30 + imagingScore*0.25 + riskFactorScore*0.15;
+    breakdownRows.push(["Questionnaire", qScore, "30%"]);
+    breakdownRows.push(["Gait / wearable sensors", sensorScore, "30%"]);
+    breakdownRows.push(["Imaging (X-ray, KL grade)", imagingScore, "25%"]);
+    breakdownRows.push(["Background risk factors", riskFactorScore, "15%"]);
+  } else {
+    composite = qScore*0.40 + sensorScore*0.40 + riskFactorScore*0.20;
+    breakdownRows.push(["Questionnaire", qScore, "40%"]);
+    breakdownRows.push(["Gait / wearable sensors", sensorScore, "40%"]);
+    breakdownRows.push(["Background risk factors", riskFactorScore, "20%"]);
+  }
+  composite = Math.round(composite);
+
+  let band, bandKey;
+  if(composite < 30){ band = dict.bands.low; bandKey="low"; }
+  else if(composite < 55){ band = dict.bands.moderate; bandKey="moderate"; }
+  else if(composite < 75){ band = dict.bands.high; bandKey="high"; }
+  else { band = dict.bands.veryhigh; bandKey="veryhigh"; }
+
+  // --- Render ---
+  document.getElementById("finalScore").textContent = composite;
+  document.getElementById("finalBand").textContent = band;
+  const card = document.getElementById("scoreCard");
+  card.className = "score-card " + bandKey;
+
+  const bd = document.getElementById("breakdown");
+  bd.innerHTML = "";
+  breakdownRows.forEach(([label,val,weight])=>{
+    const row = document.createElement("div");
+    row.className = "bar-row";
+    row.innerHTML = `
+      <div class="bar-label">${label} <span class="tag">${weight}</span></div>
+      <div class="bar-track"><div class="bar-fill" style="width:${val}%"></div></div>
+      <div class="bar-val">${val}</div>`;
+    bd.appendChild(row);
+  });
+
+  document.getElementById("guidanceText").textContent = dict.guidance[bandKey].text;
+  const gl = document.getElementById("guidanceList");
+  gl.innerHTML = "";
+  dict.guidance[bandKey].list.forEach(item=>{
+    const li = document.createElement("li");
+    li.textContent = item;
+    gl.appendChild(li);
+  });
+
+  goStep(4);
+}
+
+/* ===================== INIT ===================== */
+document.getElementById("langSwitch").addEventListener("change", e=> applyLang(e.target.value));
+applyLang("en");
+buildProgress();
+</script>
+
+</body>
+</html>
